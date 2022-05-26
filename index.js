@@ -40,6 +40,36 @@ async function run(){
             const cursor = partCollection.find(query)
             const parts = await cursor.toArray();
             res.send(parts)})
+            app.delete('/part/:id', async (req, res) =>{
+              const id = req.params.id;
+              const query = {_id: ObjectId(id)};
+              const result = await partCollection.deleteOne(query);
+             
+              res.send(result);
+          })
+        app.get('/user', verifyJWT, async(req, res) =>{
+            
+          const users = await userCollection.find().toArray();
+           
+            res.send(users)})
+
+            app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+              const email = req.params.email;
+              const requester = req.decoded.email;
+              const requesterAccount = await userCollection.findOne({ email: requester });
+              if (requesterAccount.role === 'admin') {
+                const filter = { email: email };
+                const updateDoc = {
+                  $set: { role: 'admin' },
+                };
+                const result = await userCollection.updateOne(filter, updateDoc);
+                res.send(result);
+              }
+              else{
+                res.status(403).send({message: 'forbidden'});
+              }
+        
+            })
        
         
             app.put('/user/:email', async (req, res) => {
