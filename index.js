@@ -59,29 +59,15 @@ async function run(){
 
         app.get('/booking', verifyJWT, async(req, res) =>{
             const client = req.query.client;
+            
             const authorization = req.headers.authorization;
             console.log(authorization);
             const query = {client: client};
             const bookings = await bookingCollection.find(query).toArray();
             res.send(bookings)})
-            
-           
-            // app.get('/available', async (req, res) => {
-            //   const date = req.query.date;
+
+
         
-            //   // step 1:  get all services
-            //   const services = await serviceCollection.find().toArray();
-        
-            //   // step 2: get the booking of that day. output: [{}, {}, {}, {}, {}, {}]
-            //   const query = { date: date };
-            //   const bookings = await bookingCollection.find(query).toArray();
-        
-              
-             
-        
-        
-            //   res.send(services);
-            // })   
 
 
         app.post('/booking', async(req, res) =>{
