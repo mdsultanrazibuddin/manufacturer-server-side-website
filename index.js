@@ -16,12 +16,25 @@ async function run(){
     try{
         await client.connect();
         const partCollection = client.db('manufacturer_website').collection('parts');
+        const bookingCollection = client.db('manufacturer_website').collection('bookings');
 
         app.get('/part', async(req, res) =>{
             const query ={}
             const cursor = partCollection.find(query)
             const parts = await cursor.toArray();
             res.send(parts)})
+        app.post('/booking', async(req, res) =>{
+            const booking =req.body
+            const result = await bookingCollection.insertOne(booking)
+           
+            res.send(result)});
+          //   app.get('/part/:id', async (req, res) =>{
+          //     const id = req.params.id;
+          //     const query = {_id: ObjectId(id)};
+          //     const product = await productCollection.findOne(query);
+             
+          //     res.send(product);
+          // })    
     }
     finally{
 
