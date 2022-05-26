@@ -17,12 +17,27 @@ async function run(){
         await client.connect();
         const partCollection = client.db('manufacturer_website').collection('parts');
         const bookingCollection = client.db('manufacturer_website').collection('bookings');
+        const userCollection = client.db('manufacturer_website').collection('users');
 
         app.get('/part', async(req, res) =>{
             const query ={}
             const cursor = partCollection.find(query)
             const parts = await cursor.toArray();
             res.send(parts)})
+       
+        
+            app.put('/user/:email', async (req, res) => {
+              const email = req.params.email;
+              const user = req.body;
+              const filter = { email: email };
+              const options = { upsert: true };
+              const updateDoc = {
+                $set: user,
+              };
+              const result = await userCollection.updateOne(filter, updateDoc, options);
+             
+              res.send({ result });
+            })
         
 
         app.get('/booking', async(req, res) =>{
