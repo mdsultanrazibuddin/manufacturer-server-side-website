@@ -44,6 +44,8 @@ async function run(){
 
         app.get('/booking', async(req, res) =>{
             const client = req.query.client;
+            const authorization = req.headers.authorization;
+            console.log(authorization);
             const query = {client: client};
             const bookings = await bookingCollection.find(query).toArray();
             res.send(bookings)})
