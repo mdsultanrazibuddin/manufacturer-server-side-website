@@ -23,11 +23,43 @@ async function run(){
             const cursor = partCollection.find(query)
             const parts = await cursor.toArray();
             res.send(parts)})
+        
+
+        app.get('/booking', async(req, res) =>{
+            const client = req.query.client;
+            const query = {client: client};
+            const bookings = await bookingCollection.find(query).toArray();
+            res.send(bookings)})
+            
+           
+            // app.get('/available', async (req, res) => {
+            //   const date = req.query.date;
+        
+            //   // step 1:  get all services
+            //   const services = await serviceCollection.find().toArray();
+        
+            //   // step 2: get the booking of that day. output: [{}, {}, {}, {}, {}, {}]
+            //   const query = { date: date };
+            //   const bookings = await bookingCollection.find(query).toArray();
+        
+              
+             
+        
+        
+            //   res.send(services);
+            // })   
+
+
         app.post('/booking', async(req, res) =>{
-            const booking =req.body
+            const booking =req.body;
+            const query = {product: booking.product, client: booking.client}
+            const exists = await bookingCollection.findOne(query)
+            if(exists){
+              return res.send ({success: false, booking: exists})
+            }
             const result = await bookingCollection.insertOne(booking)
            
-            res.send(result)});
+            res.send({success: true,result})});
           //   app.get('/part/:id', async (req, res) =>{
           //     const id = req.params.id;
           //     const query = {_id: ObjectId(id)};
