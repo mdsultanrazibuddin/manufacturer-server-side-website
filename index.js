@@ -36,15 +36,17 @@ async function run(){
         const userCollection = client.db('manufacturer_website').collection('users');
         const productCollection = client.db('manufacturer_website').collection('products');
 
+       
+
         app.get('/part', async(req, res) =>{
             const query ={}
             const cursor = partCollection.find(query)
             const parts = await cursor.toArray();
             res.send(parts)})
-        app.delete('/part/:id', async (req, res) =>{
-              const id = req.params.id;
-              const query = {_id: ObjectId(id)};
-              const result = await partCollection.deleteOne(query);
+        app.delete('/part/:email', async (req, res) =>{
+              const email = req.params.email;
+              const filter = {email:email};
+              const result = await partCollection.deleteOne(filter);
              
               res.send(result);
               
@@ -73,7 +75,7 @@ async function run(){
       
        
         
-            app.put('/user/admin/:email', async (req, res) => {
+            app.put('/user/admin/:email', verifyJWT,  async (req, res) => {
               const email = req.params.email;
             
               const filter = { email: email };
@@ -132,11 +134,11 @@ async function run(){
            
             res.send({success: true,result})});
 
-        app.post('/product',  verifyJWT, async(req, res) =>{
+        app.post('/part',verifyJWT, async(req, res) =>{
             const product =req.body;
            
           
-            const result = await productCollection.insertOne(product)
+            const result = await partCollection.insertOne(product)
            
             res.send(result)});
             
