@@ -34,6 +34,7 @@ async function run(){
         const partCollection = client.db('manufacturer_website').collection('parts');
         const bookingCollection = client.db('manufacturer_website').collection('bookings');
         const userCollection = client.db('manufacturer_website').collection('users');
+        const productCollection = client.db('manufacturer_website').collection('products');
 
         app.get('/part', async(req, res) =>{
             const query ={}
@@ -130,6 +131,14 @@ async function run(){
             const result = await bookingCollection.insertOne(booking)
            
             res.send({success: true,result})});
+
+        app.post('/product',  verifyJWT, async(req, res) =>{
+            const product =req.body;
+           
+          
+            const result = await productCollection.insertOne(product)
+           
+            res.send(result)});
             
     }
     finally{
