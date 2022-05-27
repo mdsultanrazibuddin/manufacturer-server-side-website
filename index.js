@@ -40,12 +40,25 @@ async function run(){
             const cursor = partCollection.find(query)
             const parts = await cursor.toArray();
             res.send(parts)})
-            app.delete('/part/:id', async (req, res) =>{
+        app.delete('/part/:id', async (req, res) =>{
               const id = req.params.id;
               const query = {_id: ObjectId(id)};
               const result = await partCollection.deleteOne(query);
              
               res.send(result);
+              
+        app.post('/purchase', async (req, res) => {
+              const booking = req.body;
+                const result = await userPurchase.insertOne(booking);
+                res.send(result);
+            });
+
+        app.post('/part', async(req, res) =>{
+                const newProduct = req.body;
+                const result = await partCollection.insertOne(newProduct);
+                res.send(result)
+            })
+      
           })
         app.get('/user', verifyJWT, async(req, res) =>{
             
