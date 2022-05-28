@@ -38,6 +38,7 @@ async function run(){
         const userCollection = client.db('manufacturer_website').collection('users');
         const productCollection = client.db('manufacturer_website').collection('products');
         const paymentCollection = client.db('manufacturer_website').collection('payment');
+        const reviewCollection = client.db('manufacturer_website').collection('reviews');
 
        
 
@@ -62,6 +63,13 @@ async function run(){
             })
       
           })
+        app.post('/review', async(req, res) =>{
+                const newProduct = req.body;
+                const result = await reviewCollection.insertOne(newProduct);
+                res.send(result)
+            })
+      
+          
         app.get('/user', verifyJWT, async(req, res) =>{
             
           const users = await userCollection.find().toArray();
@@ -109,29 +117,30 @@ async function run(){
 
         
         
-    app.get('/booking', verifyJWT, async (req, res) => {
-      const client = req.query.client;
-      const decodedEmail = req.decoded.email;
-      if (client === decodedEmail) {
-        const query = { client: client };
-        const bookings = await bookingCollection.find(query).toArray();
-        return res.send(bookings);
-      }
-      else {
-        return res.status(403).send({ message: 'forbidden access' });
-      }
-    })
-    app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
-      const product = req.body;
-      const price = product.price;
-      const amount = price*100;
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount : amount,
-        currency: 'usd',
-        payment_method_types:['card']
-      });
-      res.send({clientSecret: paymentIntent.client_secret})
-    });
+          app.get('/booking', verifyJWT, async (req, res) => {
+            const client = req.query.client;
+            const decodedEmail = req.decoded.email;
+            if (client === decodedEmail) {
+              const query = { client: client };
+              const bookings = await bookingCollection.find(query).toArray();
+              return res.send(bookings);
+            }
+            else {
+              return res.status(403).send({ message: 'forbidden access' });
+            }
+          })
+          app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
+            const product = req.body;
+            const price = product.price;
+            const amount = price*100;
+            const paymentIntent = await stripe.paymentIntents.create({
+              amount : amount,
+              currency: 'usd',
+              payment_method_types:['card']
+            });
+            res.send({clientSecret: paymentIntent.client_secret})
+          });
+
 
         
 
@@ -162,6 +171,13 @@ async function run(){
             const result = await productCollection.insertOne(product)
            
             res.send(result)});
+            app.get('/booking/:id',  async(req, res) =>{
+              const id = req.params.id;
+              const query = {_id: ObjectId(id)};
+              const booking = await bookingCollection.findOne(query);
+              res.send(booking);
+            })
+            
             app.get('/booking/:id', verifyJWT, async(req, res) =>{
               const id = req.params.id;
               const query = {_id: ObjectId(id)};
