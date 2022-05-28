@@ -1,6 +1,8 @@
 const express = require('express')
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = express()
@@ -35,6 +37,7 @@ async function run(){
         const bookingCollection = client.db('manufacturer_website').collection('bookings');
         const userCollection = client.db('manufacturer_website').collection('users');
         const productCollection = client.db('manufacturer_website').collection('products');
+        const paymentCollection = client.db('manufacturer_website').collection('payment');
 
        
 
@@ -118,7 +121,17 @@ async function run(){
         return res.status(403).send({ message: 'forbidden access' });
       }
     })
-
+    app.post('/create-payment-intent', verifyJWT, async(req, res) =>{
+      const product = req.body;
+      const price = product.price;
+      const amount = price*100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount : amount,
+        currency: 'usd',
+        payment_method_types:['card']
+      });
+      res.send({clientSecret: paymentIntent.client_secret})
+    });
 
         
 
